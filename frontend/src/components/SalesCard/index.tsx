@@ -2,6 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { BASE_URL } from "../../utils/request";
+import { sale } from "../models/sale";
 import NotificationButton from '../NotificationButton'
 import './styles.css'
 function SalesCard() {
@@ -13,10 +15,12 @@ function SalesCard() {
   const [maxDate, setMaxDate] = useState(max);
 
 
+  const [sales, setSales] = useState<sale[]>([]);
+
   useEffect(() => {
-      axios.get("http://localhost:8080/sales")
+      axios.get(`${BASE_URL}/sales`)
           .then(response => {
-              console.log(response.data);
+              setSales(response.data.content)
           })
   }, [])
 
@@ -44,61 +48,36 @@ function SalesCard() {
       <div>
         <table className="dsmeta-sales-table">
           <thead>
-            <tr>
+          <tr>
               <th className="show992">ID</th>
-              <th className="show576">Data de Nascimento</th>
+              <th className="show576">Data</th>
               <th>Vendedor</th>
               <th className="show992">Visitas</th>
               <th className="show992">Vendas</th>
               <th>Total</th>
               <th>Notificar</th>
-            </tr>
+            </tr>            
           </thead>
           <tbody>
-            <tr>
-              <td className="show992">#777</td>
-              <td className="show576">28/11/2000</td>
-              <td>Edilson</td>
-              <td className="show992">19</td>
-              <td className="show992">89</td>
-              <td>R$ 55300.00</td>
-              <td>
-                <div className="dsmeta-red-botton-container">
-                  <div className="dsmeta-red-botton">
+            {sales.map(sale => {
+                return (
+              <tr key={sale.id}>
+                <td className="show992">{sale.id}</td>
+                <td className="show576">{new Date(sale.date).toLocaleDateString()}</td>
+                <td>{sale.sellerName}</td>
+                <td className="show992">{sale.visited}</td>
+                <td className="show992">{sale.deals}</td>
+                <td>{sale.amount.toFixed(2)}</td>
+                <td>
+                  <div className="dsmeta-red-botton-container">
                     <NotificationButton />
                   </div>
-                </div>
               </td>
             </tr>
-            <tr>
-              <td className="show992">#543</td>
-              <td className="show576">12/02/2001</td>
-              <td>Beatriz</td>
-              <td className="show992">14</td>
-              <td className="show992">32</td>
-              <td>R$ 300000.00</td>
-              <td>
-                <div className="dsmeta-red-botton-container">
-                  <div className="dsmeta-red-botton">
-                    <NotificationButton />
-                  </div>
-                </div>
-              </td>
-            </tr> <tr>
-              <td className="show992">#098</td>
-              <td className="show576">08/04/1999</td>
-              <td>Ronyhéllen</td>
-              <td className="show992">10</td>
-              <td className="show992">4</td>
-              <td>R$ 6700.00</td>
-              <td>
-                <div className="dsmeta-red-botton-container">
-                  <div className="dsmeta-red-botton">
-                    <NotificationButton />
-                  </div>
-                </div>
-              </td>
-            </tr>
+
+                )
+
+            })}
           </tbody>
 
         </table>
